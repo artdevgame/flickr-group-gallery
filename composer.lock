@@ -1,0 +1,32 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "da725ce862370d97e883daa2969a0d90",
+    "content-hash": "5cc407388c2fcf4cbd8dfd3b2b51eaf3",
+    "packages": [
+        {
+            "name": "dan-coulter/phpflickr",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dan-coulter/phpflickr",
+                "reference": "origin/master"
+            },
+            "type": "library",
+            "time": "2014-07-07 07:05:23"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "dan-coulter/phpflickr": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
