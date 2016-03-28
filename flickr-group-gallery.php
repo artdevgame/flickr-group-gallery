@@ -73,8 +73,6 @@ class FlickrGroupGallery
      */
     public function attachAssets()
     {
-        wp_enqueue_style('justified-gallery-css', '//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.1/css/justifiedGallery.min.css');
-        wp_enqueue_script('justified-gallery-js', '//cdnjs.cloudflare.com/ajax/libs/justifiedGallery/3.6.1/js/jquery.justifiedGallery.min.js');
     }
 
     /**
