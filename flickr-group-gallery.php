@@ -60,10 +60,12 @@ class FlickrGroupGallery
         $this->apiSecret = $settings->get('flickr_group_gallery_api_secret');
 
         $client = $this->getClient();
+        /*
         $client->enableCache('fs',
             $settings->get('flickr_group_gallery_cache_path', '/tmp'),
             $settings->get('flickr_group_gallery_cache_expires', 0)
         );
+        */
     }
 
     /**
@@ -84,7 +86,9 @@ class FlickrGroupGallery
      */
     public function parse($attributes)
     {
-        $response = $this->getClient()->groups_pools_getPhotos($attributes['id']);
+        $response = $this->getClient()->call('flickr.groups.pools.getPhotos',
+            ['group_id' => $attributes['id']]);
+
         $photos = $response['photos']['photo'];
 
         if (isset($attributes['tags']) && !empty($attributes['tags'])) {
@@ -118,11 +122,12 @@ class FlickrGroupGallery
      */
     public function getTagsForPhotoWithId($photoId)
     {
-        $response = $this->getClient()->tags_getListPhoto($photoId);
+        $response = $this->getClient()->call('flickr.tags.getListPhoto',
+            ['photo_id' => $photoId]);
         $tags = array();
 
         if (!empty($response)) {
-            foreach ($response as $tag) {
+            foreach ($response['photo']['tags']['tag'] as $tag) {
                 $tags[] = $tag['raw'];
             }
         }
@@ -139,7 +144,8 @@ class FlickrGroupGallery
      */
     public function getPhotoWithId($photoId)
     {
-        return $this->getClient()->photos_getSizes($photoId);
+        return $this->getClient()->call('flickr.photos.getSizes',
+            ['photo_id' => $photoId]);
     }
 
     /**
@@ -185,7 +191,7 @@ class FlickrGroupGallery
     public function getClient()
     {
         if (null === $this->client) {
-            $this->client = new phpFlickr($this->apiKey, $this->apiSecret);
+            $this->client = new \DPZ\Flickr($this->apiKey, $this->apiSecret);
         }
 
         return $this->client;

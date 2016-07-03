@@ -1,28 +1,13 @@
 {
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "dan-coulter/phpflickr",
-                "version": "dev-master",
-                "source": {
-                    "url": "https://github.com/dan-coulter/phpflickr",
-                    "type": "git",
-                    "reference": "origin/master"
-                }
-            }
-        }
-    ],
+	"repositories": [
+		{"type": "vcs", "url": "https://github.com/flyingbuddha/DPZFlickr"}
+	],
 
     "require": {
-        "dan-coulter/phpflickr": "dev-master"
+        "dopiaza/dpzflickr": "dev-cache"
     },
 
     "autoload": {
-        "classmap": [
-            "vendor/dan-coulter/phpflickr/"
-        ],
-
         "psr-4": {
             "FlickrGroupGallery\\": "./lib/"
         }
