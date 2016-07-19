@@ -28,6 +28,20 @@ class FlickrGroupGallery
     protected $apiSecret;
 
     /**
+     * Stores the length of time in seconds that the cache will expire after.
+     *
+     * @var int
+     */
+    protected $cacheExpiresAfter;
+
+    /**
+     * Stores the cache path.
+     *
+     * @var string
+     */
+    protected $cachePath;
+
+    /**
      * Stores the API client used to talk to Flickr.
      *
      * @var phpFlickr
@@ -58,14 +72,8 @@ class FlickrGroupGallery
 
         $this->apiKey = $settings->get('flickr_group_gallery_api_key');
         $this->apiSecret = $settings->get('flickr_group_gallery_api_secret');
-
-        $client = $this->getClient();
-        /*
-        $client->enableCache('fs',
-            $settings->get('flickr_group_gallery_cache_path', '/tmp'),
-            $settings->get('flickr_group_gallery_cache_expires', 0)
-        );
-        */
+        $this->cachePath = $settings->get('flickr_group_gallery_cache_path', '/tmp/DPZ_Flickr');
+        $this->cacheExpiresAfter = $settings->get('flickr_group_gallery_cache_expires', 0);
     }
 
     /**
@@ -89,9 +97,13 @@ class FlickrGroupGallery
         $response = $this->getClient()->call('flickr.groups.pools.getPhotos',
             ['group_id' => $attributes['id']]);
 
+        if (null === $response) {
+            return;
+        }
+
         $photos = $response['photos']['photo'];
 
-        if (isset($attributes['tags']) && !empty($attributes['tags'])) {
+        if (!empty($photos) && isset($attributes['tags']) && !empty($attributes['tags'])) {
             $tags = array_flip(explode(',', $attributes['tags']));
 
             // the flickr api only supports one tag on the pools.getPhotos call
@@ -106,6 +118,8 @@ class FlickrGroupGallery
                 }
                 return false;
             });
+
+
         }
 
         ob_start();
@@ -124,6 +138,7 @@ class FlickrGroupGallery
     {
         $response = $this->getClient()->call('flickr.tags.getListPhoto',
             ['photo_id' => $photoId]);
+
         $tags = array();
 
         if (!empty($response)) {
@@ -191,7 +206,12 @@ class FlickrGroupGallery
     public function getClient()
     {
         if (null === $this->client) {
-            $this->client = new \DPZ\Flickr($this->apiKey, $this->apiSecret);
+            $options = array(
+                'cachePath' => $this->cachePath,
+                'cacheExpiresAfter' => $this->cacheExpiresAfter,
+            );
+
+            $this->client = new \DPZ\Flickr($this->apiKey, $this->apiSecret, null, $options);
         }
 
         return $this->client;
