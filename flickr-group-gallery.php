@@ -94,8 +94,11 @@ class FlickrGroupGallery
      */
     public function parse($attributes)
     {
-        $response = $this->getClient()->call('flickr.groups.pools.getPhotos',
-            ['group_id' => $attributes['id']]);
+        $response = $this->getClient()->call('flickr.groups.pools.getPhotos', [
+            'group_id' => $attributes['id'],
+            'per_page' => 500,
+            'extras' => 'tags,machine_tags',
+        ]);
 
         if (null === $response) {
             return;
@@ -104,13 +107,14 @@ class FlickrGroupGallery
         $photos = $response['photos']['photo'];
 
         if (!empty($photos) && isset($attributes['tags']) && !empty($attributes['tags'])) {
-            $tags = array_flip(explode(',', $attributes['tags']));
+            $tags = array_flip(explode(',', str_replace('-', '', $attributes['tags'])));
 
             // the flickr api only supports one tag on the pools.getPhotos call
             // (according to docs), so grab all tags from the photo in question
             // and filter on them
             $photos = array_filter($photos, function ($photo) use ($tags) {
-                $allTags = $this->getTagsForPhotoWithId($photo['id']);
+                // $allTags = $this->getTagsForPhotoWithId($photo['id']);
+                $allTags = explode(' ', $photo['tags']);
                 foreach ($allTags as $tag) {
                     if (isset($tags[$tag])) {
                         return true;
@@ -118,8 +122,6 @@ class FlickrGroupGallery
                 }
                 return false;
             });
-
-
         }
 
         ob_start();
@@ -146,6 +148,8 @@ class FlickrGroupGallery
                 $tags[] = $tag['raw'];
             }
         }
+
+        print_r($tags);
 
         return $tags;
     }
